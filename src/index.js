@@ -26,12 +26,15 @@ import "assets/css/demo.css";
 import AdminLayout from "layouts/Admin.js";
 import Icons from "views/Icons";
 import TableList from "views/TableList";
+import Dashboard from "views/Dashboard";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
     <Routes>
+      {/* <Route path="/" element={<AdminLayout/>}/> */}
+      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/icons" element={<Icons />} />
       <Route path="/tablelist" element={<TableList />} />

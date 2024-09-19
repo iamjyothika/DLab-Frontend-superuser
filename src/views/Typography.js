@@ -1,9 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from 'react';
 import Table from 'react-bootstrap/Table';
 import { Card, CardBody, CardHeader, CardTitle, Row, Col } from "reactstrap";
 import backgroundImage from './lbmin6.png'; 
+import { BASE_URL } from 'baseUrl';
+import axios from 'axios';
 
 function Typography() {
+  const [feedback, setFeedback] = useState([]);
+  const [reviews, setReviews] = useState([]);
+
+
+  const fetchFeedback = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/lab/all-labfeedback/`);
+      const fetchedFeedback = response.data;
+      console.log('Api response',response.data);
+   
+      
+      const feedbackWithLabAndUserEmails = await Promise.all(
+        fetchedFeedback.map(async (feedbackItem) => {
+          try {
+            // Fetch lab name
+            const labResponse = await axios.get(`${BASE_URL}/user/lab-detail/${feedbackItem.lab}/`);
+            const labName = labResponse.data.labname;
+  
+            // Fetch user email
+            const userResponse = await axios.get(`${BASE_URL}/user/userdata/${feedbackItem.user}/`);
+            const userEmail = userResponse.data.email;
+            console.log('User Response',userResponse.data)
+  
+            return {
+              ...feedbackItem,
+              labname: labName || 'Unknown Lab',
+              email: userEmail || 'Unknown Email', // Add the email here
+            };
+          } catch (error) {
+            console.error('Error fetching lab/user details:', error);
+            return {
+              ...feedbackItem,
+              labname: 'Unknown Lab',
+              email: 'Unknown Email', // Fallback if email not found
+            };
+          }
+        })
+      );
+  
+      setFeedback(feedbackWithLabAndUserEmails);
+      console.log('Updated Feedback Array:', feedbackWithLabAndUserEmails); // Log the updated feedback
+    } catch (error) {
+      console.error('Error fetching feedback:', error);
+    }
+  };
+
+  // Trigger fetching data on component mount
+  useEffect(() => {
+    fetchFeedback();
+  }, []);
+
+  // Log feedback when it updates
+  useEffect(() => {
+    console.log('Feedback Array:', feedback);
+  }, [feedback]);
+
+
+  
+
+      
+
+  
   return (
     <>
       <div
@@ -37,30 +101,15 @@ function Typography() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Laura</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Hyatt Labs</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>24-02-2024</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>The clinic was very hygienic and clinic staff were friendly. My visit was pleasant</td>
+                  {feedback.map((item) => (
+                      <tr key={item.id}>
+                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>{item.email}</td>
+                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>{item.labname}</td>
+                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>{item.created_at.split('T')[0]}</td>
+                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>{item.description}</td>
                     </tr>
-                    <tr>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Aardhra </td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Optigen Labs</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>31-07-2023</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>My visit to the clinic was very upsetting as I had to wait an awful lot of time for a single blood test</td>
-                    </tr>
-                    <tr>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Devika</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Riott Innovations</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>01-03-2024</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>It was an ok experience for me as testing duration and waiting period was alright but the staff were unprofessional and just chatting around</td>
-                    </tr>
-                    <tr>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Naina</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>Hyatt Labs</td>
-                      <td style={{backgroundColor:"transparent" ,fontWeight:"bold"}}>06-02-2024</td>
-                      <td style={{backgroundColor:"transparent",fontWeight:"bold" }}>It was an ok experience for me as testing duration and waiting period was alright but the staff were unprofessional</td>
-                    </tr>
+                     ))}
+                    
                   </tbody>
                 </Table>
               </CardBody>

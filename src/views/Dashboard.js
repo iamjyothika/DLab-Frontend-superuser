@@ -1,7 +1,10 @@
-import React from "react";
+import React,{useEffect,useState} from "react";
 // react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
 import img from './lbmin6.png'
+import axios from 'axios';
+import { BASE_URL } from "baseUrl";
+import { useNavigate } from 'react-router-dom';
 
 // reactstrap components
 import {
@@ -36,6 +39,20 @@ import {
 } from "variables/charts.js";
 
 function Dashboard() {
+  const [labs, setLabs] = useState([]);
+  
+  const navigate = useNavigate();
+
+
+
+  useEffect(() => {
+    
+    axios.get(`${BASE_URL}/lab/labadd/`).then((response) => {
+      console.log(response);
+      setLabs(response.data)
+    });
+  }, [navigate]);
+
   const backgroundImageStyle = {
     backgroundImage: `url(${img})`,
     backgroundSize: "cover",
@@ -175,36 +192,14 @@ function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td>Hyatt Labs</td>
-                        <td>9274538208</td>
-                        <td>Caltex</td>
-                        <td className="text-left">Hyattlabs@gmail.com</td>
+                    {labs.length > 0 && labs.map((lab, index) => (
+                    <tr key={index}>
+                        <td>{lab.labname}</td>
+                        <td>{lab.contact}</td>
+                        <td>{lab.city}</td>
+                        <td className="text-left">{lab.email}</td>
                       </tr>
-                      <tr>
-                        <td>OptiGen Labs</td>
-                        <td>92376328708</td>
-                        <td>Cantonment</td>
-                        <td className="text-left">OptiGenlabs@gmail.com</td>
-                      </tr>
-                      <tr>
-                        <td>Riott Labs</td>
-                        <td>927388208</td>
-                        <td>Plaza</td>
-                        <td className="text-left">Riotlabs@gmail.com</td>
-                      </tr>
-                      <tr>
-                        <td>Med Labs</td>
-                        <td>9291638208</td>
-                        <td>Chovva</td>
-                        <td className="text-left">Medlabs@gmail.com</td>
-                      </tr>
-                      <tr>
-                        <td>Genotics Labs</td>
-                        <td>9270268208</td>
-                        <td>Talap</td>
-                        <td className="text-left">Genoticslabs@gmail.com</td>
-                      </tr>
+                    ))}
                     </tbody>
                   </Table>
                 </CardBody>

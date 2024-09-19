@@ -1,25 +1,37 @@
 import React from "react";
 import Button from 'react-bootstrap/Button';
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import Modal from 'react-bootstrap/Modal';
 import { Card, CardBody, CardHeader, CardTitle, Table, Row, Col, Container, InputGroup, Form } from 'react-bootstrap';
 import backgroundImage from './lbmin6.png'; 
+import axios from "axios";
+import { BASE_URL } from "baseUrl";
+import { useNavigate } from 'react-router-dom';
+
 
 function Customer() {
-  const [validated, setValidated] = useState(false);
+ const [users,setUsers]=useState([]);
+ const navigate=useNavigate();
+ useEffect(() => {
+    
+  axios.get(`${BASE_URL}/lab/allusers/`)
+  .then((response) => {
+    console.log(response);
+    setUsers(response.data)
+  });
+}, [navigate]);
+ 
 
-  const handleSubmit = (event) => {
-    const form = event.currentTarget;
-    if (form.checkValidity() === false) {
-      event.preventDefault();
-      event.stopPropagation();
-    }
-    setValidated(true);
-  };
 
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+    
+     
+    
+  
+  
+
+  // const [show, setShow] = useState(false);
+  // const handleClose = () => setShow(false);
+  // const handleShow = () => setShow(true);
 
   return (
     <>
@@ -51,66 +63,21 @@ function Customer() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td style={{ backgroundColor: "transparent" }}><b>Juwan D'souza</b></td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-left"><b>+91 29894743</b></td>
+                  {users.map((user) => (
+                      <tr key={user.id}>
+                      <td style={{ backgroundColor: "transparent" }}><b>{user.name}</b></td>
+                      <td style={{ backgroundColor: "transparent" }} className="text-left"><b>{user.contact}</b></td>
                       <td style={{ backgroundColor: "transparent", fontWeight: "bold"  }} className="text-center">
-                        <div>Hill Palace</div>
-                        <div>P.O.Chovva</div>
-                        <div>Kannur</div>
+                       <div>{user.address}</div>
                       </td>
                       <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>Kannur</b>
+                        <b>{user.city}</b>
                       </td>
                       <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>670004</b>
+                        <b>{user.pincode}</b>
                       </td>
                     </tr>
-                    <tr>
-                      <td style={{ backgroundColor: "transparent" }}><b>Alex</b></td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-left"><b>+91 20354843</b></td>
-                      <td style={{ backgroundColor: "transparent",fontWeight: "bold" }} className="text-center" >
-                        <div>Blue Bells</div>
-                        <div>P.O.Caltex</div>
-                        <div>Kannur</div>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>Kannur</b>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>670004</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ backgroundColor: "transparent" }}><b>Olivia Peter</b></td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-left"><b>+91 92784207</b></td>
-                      <td style={{ backgroundColor: "transparent", fontWeight: "bold"  }} className="text-center">
-                        <div>Nest</div>
-                        <div>Cantonment</div>
-                        <div>Kannur</div>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>Kannur</b>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>670004</b>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ backgroundColor: "transparent" }}><b>Chethan</b></td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-left"><b>+91 29894743</b></td>
-                      <td style={{ backgroundColor: "transparent", fontWeight: "bold"  }} className="text-center" >
-                        <div>Chaithanyam</div>
-                        <div>P.O.Puthiyatheru</div>
-                        <div>Kannur</div>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>Kannur</b>
-                      </td>
-                      <td style={{ backgroundColor: "transparent" }} className="text-center">
-                        <b>670004</b>
-                      </td>
-                    </tr>
+                  ))}
                   </tbody>
                 </Table>
               </CardBody>
@@ -119,7 +86,7 @@ function Customer() {
         </Row>
       </div>
 
-      <Modal show={show} onHide={handleClose}>
+      {/* <Modal show={show} onHide={handleClose}> */}
         <Modal.Header closeButton>
           <Modal.Title style={{ marginLeft: "140px", fontSize: "40px" }}>LAB DETAILS</Modal.Title>
         </Modal.Header>
@@ -130,7 +97,7 @@ function Customer() {
                 <Col md={{ span: 12, offset: 0 }}>
                   <Card>
                     <Card.Body className="labs">
-                      <Form noValidate validated={validated} onSubmit={handleSubmit}>
+                      {/* <Form noValidate validated={validated} onSubmit={handleSubmit}> */}
                         <Row className="mb-3">
                           <Form.Group style={{ marginTop: '10px' }} as={Col} controlId="validationCustom01">
                             <Form.Label style={{ color: "black", fontSize: "15px", fontWeight: 'bold' }}>LABNAME</Form.Label>
@@ -228,7 +195,7 @@ function Customer() {
                         <div style={{ marginTop: "10px", marginLeft: "250px" }}>
                           <Button style={{ height: "45px", width: "120px", fontSize: "20px", backgroundColor: "#1b8add", color: "#fff" }} type="submit">Save</Button>
                         </div>
-                      </Form>
+                      {/* </Form> */}
                     </Card.Body>
                   </Card>
                 </Col>
@@ -236,7 +203,7 @@ function Customer() {
             </Container>
           </div>
         </Modal.Body>
-      </Modal>
+      {/* </Modal> */}
     </>
   );
 }
